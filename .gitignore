@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# pit1 generated output
+pit1-output/
+
+# macOS
+.DS_Store
+
+# Secrets
+.env
+.env.*
+*.env
+secrets.*
+credentials.*
