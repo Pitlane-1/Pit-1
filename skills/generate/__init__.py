@@ -8,6 +8,11 @@ from utils.logger import log
 def run_generate(analysis: dict, recommendation: dict, diagram_only: bool = False) -> dict:
     from skills.generate.diagram import generate_diagram
 
+    # output 폴더를 분석한 프로젝트 경로 기준으로 설정
+    project_path = Path(analysis.get("project_path", ".")).resolve()
+    out_dir = project_path / "pit1-output"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     output = {
         "iac": None,
         "dockerfile": None,
@@ -27,26 +32,25 @@ def run_generate(analysis: dict, recommendation: dict, diagram_only: bool = Fals
         log.info("Generating Terraform HCL...")
         from skills.generate.iac import generate_iac
         output["iac"] = generate_iac(analysis, recommendation)
-        p = _write("pit1-output/main.tf", output["iac"])
+        p = _write(out_dir / "main.tf", output["iac"])
         output["files_written"].append(str(p))
 
-    project_path = analysis.get("project_path", ".")
-    if analysis.get("runtime") == "dynamic" and not (Path(project_path) / "Dockerfile").exists():
+    if analysis.get("runtime") == "dynamic" and not (project_path / "Dockerfile").exists():
         log.info("Generating Dockerfile...")
         from skills.generate.dockerfile import generate_dockerfile
         output["dockerfile"] = generate_dockerfile(analysis)
-        p = _write("pit1-output/Dockerfile", output["dockerfile"])
+        p = _write(out_dir / "Dockerfile", output["dockerfile"])
         output["files_written"].append(str(p))
 
-    p = _write("pit1-output/architecture.mmd", diagrams["mermaid"])
+    p = _write(out_dir / "architecture.mmd", diagrams["mermaid"])
     output["files_written"].append(str(p))
 
     return output
 
 
-def _write(rel_path: str, content: str) -> Path:
-    p = Path(rel_path)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(content, encoding="utf-8")
-    log.info(f"Written: {p}")
-    return p
+def _write(path: Path, content: str) -> Path:
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+    log.info(f"Written: {path}")
+    return path
