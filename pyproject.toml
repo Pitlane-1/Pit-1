@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "pit1"
+version = "0.1.0"
+description = "AI-powered infra agent. From code or text to cloud—instantly."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "typer>=0.12",
+    "rich>=13",
+    "anthropic>=0.25",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+pit1 = "pit1.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pit1*"]
